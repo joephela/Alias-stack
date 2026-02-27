@@ -1,8 +1,26 @@
 'use strict'
 
-const os   = require('os')
-const path = require('path')
-const fs   = require('fs')
+import os from 'os'
+import path from 'path'
+import fs from 'fs'
+
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+export interface Alias {
+  name: string
+  command: string
+  description: string
+}
+
+interface AliasWithLineIndex extends Alias {
+  _lineIndex: number
+}
+
+export interface GetAllResult {
+  filePath: string
+  displayPath: string
+  aliases: Alias[]
+}
 
 // ── Regex ─────────────────────────────────────────────────────────────────────
 // Matches:  alias gs='git status' # Short for git status
@@ -11,7 +29,7 @@ const ALIAS_RE = /^alias\s+([\w.:\-]+)\s*=\s*(['"])([\s\S]*?)\2\s*(?:#\s*(.*))?$
 
 // ── Shell File Resolution ─────────────────────────────────────────────────────
 
-function resolveShellFile() {
+export function resolveShellFile(): string {
   const home  = os.homedir()
   const shell = process.env.SHELL || ''
 
@@ -31,8 +49,8 @@ function resolveShellFile() {
 
 // ── Parsing ───────────────────────────────────────────────────────────────────
 
-function parseLines(lines) {
-  return lines.reduce((aliases, line, index) => {
+export function parseLines(lines: string[]): AliasWithLineIndex[] {
+  return lines.reduce<AliasWithLineIndex[]>((aliases, line, index) => {
     const match = ALIAS_RE.exec(line.trim())
     if (match) {
       aliases.push({
@@ -48,13 +66,13 @@ function parseLines(lines) {
 
 // ── Serialization ─────────────────────────────────────────────────────────────
 
-function quoteCommand(command) {
+export function quoteCommand(command: string): string {
   // Use double quotes if command contains single quotes, else single quotes
   if (command.includes("'")) return `"${command}"`
   return `'${command}'`
 }
 
-function aliasToLine({ name, command, description }) {
+export function aliasToLine({ name, command, description }: Alias): string {
   const quoted  = quoteCommand(command)
   const comment = description && description.trim() ? ` # ${description.trim()}` : ''
   return `alias ${name}=${quoted}${comment}`
@@ -62,7 +80,7 @@ function aliasToLine({ name, command, description }) {
 
 // ── Public API ────────────────────────────────────────────────────────────────
 
-async function getAll() {
+export async function getAll(): Promise<GetAllResult> {
   const filePath    = resolveShellFile()
   const displayPath = filePath.replace(os.homedir(), '~')
 
@@ -75,14 +93,14 @@ async function getAll() {
   const parsed  = parseLines(lines)
 
   // Strip internal _lineIndex before returning
-  const aliases = parsed.map(({ name, command, description }) =>
+  const aliases: Alias[] = parsed.map(({ name, command, description }) =>
     ({ name, command, description })
   )
 
   return { filePath, displayPath, aliases }
 }
 
-async function save({ name, command, description }) {
+export async function save({ name, command, description }: Alias): Promise<void> {
   const filePath = resolveShellFile()
 
   // Create file if missing (common for .bash_aliases)
@@ -97,7 +115,7 @@ async function save({ name, command, description }) {
 
   const existing = parsed.find(a => a.name === name)
 
-  let updatedLines
+  let updatedLines: string[]
   if (existing) {
     // Replace in-place — all other lines untouched
     updatedLines = lines.map((line, i) =>
@@ -120,7 +138,7 @@ async function save({ name, command, description }) {
   )
 }
 
-async function remove(name) {
+export async function remove(name: string): Promise<void> {
   const filePath = resolveShellFile()
 
   if (!fs.existsSync(filePath)) return
@@ -134,15 +152,4 @@ async function remove(name) {
 
   const updatedLines = lines.filter((_, i) => i !== target._lineIndex)
   await fs.promises.writeFile(filePath, updatedLines.join('\n'), 'utf8')
-}
-
-module.exports = {
-  resolveShellFile,
-  getAll,
-  save,
-  remove,
-  // Exported for unit testing:
-  parseLines,
-  aliasToLine,
-  quoteCommand,
 }

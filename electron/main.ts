@@ -1,13 +1,13 @@
 'use strict'
 
-const { app, BrowserWindow, ipcMain } = require('electron')
-const path = require('path')
-const os   = require('os')
-const shellManager = require('./shellManager')
+import { app, BrowserWindow, ipcMain } from 'electron'
+import path from 'path'
+import os from 'os'
+import * as shellManager from './shellManager'
 
 const isDev = process.env.NODE_ENV === 'development'
 
-function createWindow() {
+function createWindow(): void {
   const win = new BrowserWindow({
     width: 900,
     height: 650,
@@ -53,26 +53,25 @@ ipcMain.handle('alias:get-all', async () => {
       shellFileDisplay: result.displayPath,
     }
   } catch (err) {
-    return { success: false, error: err.message }
+    return { success: false, error: (err as Error).message }
   }
 })
 
 ipcMain.handle('alias:save', async (_event, alias) => {
-  // alias = { name, command, description }
   try {
     await shellManager.save(alias)
     return { success: true }
   } catch (err) {
-    return { success: false, error: err.message }
+    return { success: false, error: (err as Error).message }
   }
 })
 
-ipcMain.handle('alias:delete', async (_event, name) => {
+ipcMain.handle('alias:delete', async (_event, name: string) => {
   try {
     await shellManager.remove(name)
     return { success: true }
   } catch (err) {
-    return { success: false, error: err.message }
+    return { success: false, error: (err as Error).message }
   }
 })
 
@@ -82,6 +81,6 @@ ipcMain.handle('alias:get-shell-file', async () => {
     const displayPath = filePath.replace(os.homedir(), '~')
     return { success: true, path: filePath, displayPath }
   } catch (err) {
-    return { success: false, error: err.message }
+    return { success: false, error: (err as Error).message }
   }
 })

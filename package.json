@@ -2,25 +2,31 @@
   "name": "alias-manager",
   "version": "1.0.0",
   "description": "Desktop GUI for managing CLI shell aliases",
-  "main": "electron/main.js",
+  "main": "dist-electron/main.js",
   "scripts": {
-    "dev": "concurrently -k \"vite\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .\"",
-    "build": "vite build && electron-builder",
-    "build:mac": "vite build && electron-builder --mac",
-    "build:linux": "vite build && electron-builder --linux",
+    "dev": "concurrently -k \"vite\" \"tsc -p tsconfig.node.json --watch\" \"wait-on http://localhost:5173 dist-electron/main.js && cross-env NODE_ENV=development electron .\"",
+    "build": "tsc -p tsconfig.node.json && vite build && electron-builder",
+    "build:mac": "tsc -p tsconfig.node.json && vite build && electron-builder --mac",
+    "build:linux": "tsc -p tsconfig.node.json && vite build && electron-builder --linux",
     "preview": "vite preview",
-    "test:shell": "node electron/shellManager.test.js"
+    "test:shell": "tsc -p tsconfig.node.json && node dist-electron/shellManager.test.js",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.node.json --noEmit"
   },
   "dependencies": {
     "react": "^18.3.0",
     "react-dom": "^18.3.0"
   },
   "devDependencies": {
+    "@types/node": "^25.3.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^4.3.0",
     "concurrently": "^9.0.0",
     "cross-env": "^7.0.3",
     "electron": "^33.0.0",
     "electron-builder": "^25.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
     "vite": "^6.0.0",
     "wait-on": "^8.0.0"
   }

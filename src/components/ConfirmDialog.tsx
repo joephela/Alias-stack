@@ -1,10 +1,17 @@
 import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
 
-export default function ConfirmDialog({ message, detail, onConfirm, onCancel }) {
+interface ConfirmDialogProps {
+  message: string
+  detail?: string
+  onConfirm: () => void
+  onCancel: () => void
+}
+
+export default function ConfirmDialog({ message, detail, onConfirm, onCancel }: ConfirmDialogProps) {
   // Escape key cancels
   useEffect(() => {
-    function handleKeyDown(e) {
+    function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') onCancel()
     }
     document.addEventListener('keydown', handleKeyDown)

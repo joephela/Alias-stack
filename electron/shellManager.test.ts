@@ -1,19 +1,19 @@
 'use strict'
 
-const assert = require('assert')
-const { parseLines, aliasToLine, quoteCommand } = require('./shellManager')
+import assert from 'assert'
+import { parseLines, aliasToLine, quoteCommand } from './shellManager'
 
 let passed = 0
 let failed = 0
 
-function test(label, fn) {
+function test(label: string, fn: () => void): void {
   try {
     fn()
     console.log(`  ✓ ${label}`)
     passed++
   } catch (err) {
     console.error(`  ✗ ${label}`)
-    console.error(`    ${err.message}`)
+    console.error(`    ${(err as Error).message}`)
     failed++
   }
 }
@@ -126,7 +126,7 @@ test('generates alias line without description', () => {
 })
 
 test('generates alias line with undefined description', () => {
-  const line = aliasToLine({ name: 'll', command: 'ls -la', description: undefined })
+  const line = aliasToLine({ name: 'll', command: 'ls -la', description: undefined as unknown as string })
   assert.strictEqual(line, "alias ll='ls -la'")
 })
 

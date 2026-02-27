@@ -2,18 +2,19 @@ import { useState } from 'react'
 import AliasList from './components/AliasList'
 import AliasForm from './components/AliasForm'
 import { useAliases } from './hooks/useAliases'
+import type { Alias } from './types/electron'
 
 export default function App() {
   const { aliases, shellFile, loading, error, reload, saveAlias, deleteAlias } = useAliases()
-  const [view, setView]                 = useState('list')   // 'list' | 'form'
-  const [editingAlias, setEditingAlias] = useState(null)     // null | { name, command, description }
+  const [view, setView]                 = useState<'list' | 'form'>('list')
+  const [editingAlias, setEditingAlias] = useState<Alias | null>(null)
 
   function handleAddNew() {
     setEditingAlias(null)
     setView('form')
   }
 
-  function handleEdit(alias) {
+  function handleEdit(alias: Alias) {
     setEditingAlias(alias)
     setView('form')
   }
@@ -23,7 +24,7 @@ export default function App() {
     setEditingAlias(null)
   }
 
-  async function handleSave(aliasData) {
+  async function handleSave(aliasData: Alias) {
     const result = await saveAlias(aliasData)
     if (result.success) {
       setView('list')
@@ -32,7 +33,7 @@ export default function App() {
     return result
   }
 
-  async function handleDelete(name) {
+  async function handleDelete(name: string) {
     await deleteAlias(name)
   }
 

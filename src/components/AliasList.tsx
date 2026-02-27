@@ -1,6 +1,18 @@
 import AliasRow from './AliasRow'
+import type { Alias } from '../types/electron'
 
-export default function AliasList({ aliases, shellFile, loading, error, onAddNew, onEdit, onDelete, onReload }) {
+interface AliasListProps {
+  aliases: Alias[]
+  shellFile: string
+  loading: boolean
+  error: string | null
+  onAddNew: () => void
+  onEdit: (alias: Alias) => void
+  onDelete: (name: string) => void
+  onReload: () => void
+}
+
+export default function AliasList({ aliases, shellFile, loading, error, onAddNew, onEdit, onDelete, onReload }: AliasListProps) {
   return (
     <div className="screen">
       <header className="topbar">

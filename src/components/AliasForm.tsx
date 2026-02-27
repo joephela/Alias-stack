@@ -1,28 +1,40 @@
 import { useState, useEffect } from 'react'
+import type { Alias, IpcResponse } from '../types/electron'
 
 const NAME_RE = /^[\w.:\-]+$/
 
-export default function AliasForm({ initial, onSave, onCancel }) {
+interface AliasFormProps {
+  initial: Alias | null
+  onSave: (alias: Alias) => Promise<IpcResponse>
+  onCancel: () => void
+}
+
+interface FormErrors {
+  name?: string
+  command?: string
+}
+
+export default function AliasForm({ initial, onSave, onCancel }: AliasFormProps) {
   const isEdit = !!initial
 
   const [name,        setName]        = useState(initial?.name        ?? '')
   const [command,     setCommand]     = useState(initial?.command     ?? '')
   const [description, setDescription] = useState(initial?.description ?? '')
-  const [errors,      setErrors]      = useState({})
+  const [errors,      setErrors]      = useState<FormErrors>({})
   const [saving,      setSaving]      = useState(false)
-  const [saveError,   setSaveError]   = useState(null)
+  const [saveError,   setSaveError]   = useState<string | null>(null)
 
   // Escape key cancels the form
   useEffect(() => {
-    function handleKeyDown(e) {
+    function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') onCancel()
     }
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [onCancel])
 
-  function validate() {
-    const e = {}
+  function validate(): FormErrors {
+    const e: FormErrors = {}
     if (!name.trim()) {
       e.name = 'Name is required'
     } else if (!NAME_RE.test(name.trim())) {
@@ -34,7 +46,7 @@ export default function AliasForm({ initial, onSave, onCancel }) {
     return e
   }
 
-  async function handleSubmit(ev) {
+  async function handleSubmit(ev: React.FormEvent) {
     ev.preventDefault()
     const e = validate()
     if (Object.keys(e).length) {
@@ -57,12 +69,12 @@ export default function AliasForm({ initial, onSave, onCancel }) {
     }
   }
 
-  function handleNameChange(e) {
+  function handleNameChange(e: React.ChangeEvent<HTMLInputElement>) {
     setName(e.target.value)
     if (errors.name) setErrors(prev => ({ ...prev, name: undefined }))
   }
 
-  function handleCommandChange(e) {
+  function handleCommandChange(e: React.ChangeEvent<HTMLInputElement>) {
     setCommand(e.target.value)
     if (errors.command) setErrors(prev => ({ ...prev, command: undefined }))
   }
