@@ -1,0 +1,66 @@
+appId: com.aliasmanager.app
+productName: Alias Manager
+copyright: "Copyright © 2024"
+
+directories:
+  output: dist-electron
+  buildResources: public
+
+files:
+  - electron/**
+  - dist/**
+  - "!**/*.map"
+
+# ── macOS ─────────────────────────────────────────────────────────────────────
+mac:
+  category: public.app-category.developer-tools
+  icon: public/icon.icns
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
+  target:
+    - target: dmg
+      arch:
+        - x64
+        - arm64
+
+dmg:
+  title: "Alias Manager ${version}"
+  icon: public/icon.icns
+  contents:
+    - x: 130
+      y: 220
+      type: file
+    - x: 410
+      y: 220
+      type: link
+      path: /Applications
+
+# ── Linux ─────────────────────────────────────────────────────────────────────
+linux:
+  icon: public/icon.png
+  category: Development
+  description: Desktop GUI for managing CLI shell aliases
+  target:
+    - target: AppImage
+      arch:
+        - x64
+        - arm64
+    - target: deb
+      arch:
+        - x64
+    - target: rpm
+      arch:
+        - x64
+
+deb:
+  depends:
+    - libgtk-3-0
+    - libnotify4
+    - libnss3
+    - libxss1
+    - libxtst6
+    - xdg-utils
+    - libatspi2.0-0
+    - libuuid1
