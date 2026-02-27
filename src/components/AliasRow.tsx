@@ -8,24 +8,35 @@ interface AliasRowProps {
   onDelete: () => void
 }
 
+const tdCls = 'px-3.5 py-[11px] border-b border-gray-200 dark:border-[#3a3a3a] align-middle'
+
+const iconBtn =
+  'inline-flex items-center justify-center bg-transparent border-none p-[5px_8px] ' +
+  'rounded cursor-pointer text-sm leading-none opacity-55 ' +
+  'transition-[opacity,background] duration-100 hover:opacity-100 hover:bg-gray-200 dark:hover:bg-[#3a3a3a]'
+
 export default function AliasRow({ alias, onEdit, onDelete }: AliasRowProps) {
   const [confirming, setConfirming] = useState(false)
 
   return (
     <>
-      <tr>
-        <td>
-          <code className="alias-name">{alias.name}</code>
+      <tr className="[&:last-child>td]:border-b-0 hover:bg-gray-50 dark:hover:bg-[#1e1e1e]">
+        <td className={tdCls}>
+          <code className="font-mono font-semibold text-blue-600 dark:text-blue-400 text-[13px]">
+            {alias.name}
+          </code>
         </td>
-        <td>
-          <code className="alias-command">{alias.command}</code>
+        <td className={tdCls}>
+          <code className="font-mono text-xs text-gray-800 dark:text-[#f0f0f0]">
+            {alias.command}
+          </code>
         </td>
-        <td className="alias-description">
-          {alias.description || <span className="muted">—</span>}
+        <td className={`${tdCls} text-gray-500 text-[13px]`}>
+          {alias.description || <span className="text-gray-400">—</span>}
         </td>
-        <td className="alias-actions">
+        <td className={`${tdCls} w-[90px] whitespace-nowrap text-right`}>
           <button
-            className="btn-icon"
+            className={iconBtn}
             onClick={onEdit}
             title="Edit alias"
             aria-label={`Edit alias ${alias.name}`}
@@ -33,7 +44,7 @@ export default function AliasRow({ alias, onEdit, onDelete }: AliasRowProps) {
             ✏️
           </button>
           <button
-            className="btn-icon btn-icon-danger"
+            className={`${iconBtn} hover:!bg-red-50 dark:hover:!bg-red-900/20`}
             onClick={() => setConfirming(true)}
             title="Delete alias"
             aria-label={`Delete alias ${alias.name}`}
