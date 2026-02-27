@@ -1,7 +1,14 @@
 import { useState } from 'react'
 import ConfirmDialog from './ConfirmDialog'
+import type { Alias } from '../types/electron'
 
-export default function AliasRow({ alias, onEdit, onDelete }) {
+interface AliasRowProps {
+  alias: Alias
+  onEdit: () => void
+  onDelete: () => void
+}
+
+export default function AliasRow({ alias, onEdit, onDelete }: AliasRowProps) {
   const [confirming, setConfirming] = useState(false)
 
   return (
