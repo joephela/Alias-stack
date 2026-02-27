@@ -4,6 +4,13 @@ module.exports = {
   darkMode: 'media',
   theme: {
     extend: {
+      opacity: {
+        '55': '0.55',
+        '85': '0.85',
+      },
+      boxShadow: {
+        'focus-ring': '0 0 0 3px rgba(0, 102, 204, 0.12)',
+      },
       keyframes: {
         'fade-in': {
           from: { opacity: '0' },

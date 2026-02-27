@@ -14,6 +14,22 @@ interface FormErrors {
   command?: string
 }
 
+const btnBase =
+  'inline-flex items-center gap-1.5 px-4 py-[7px] rounded border text-[13px] font-medium ' +
+  'cursor-pointer transition-opacity duration-150 whitespace-nowrap ' +
+  'hover:opacity-85 disabled:opacity-50 disabled:cursor-not-allowed'
+
+const btnPrimary   = `${btnBase} bg-blue-600 text-white border-blue-600`
+const btnSecondary = `${btnBase} bg-white dark:bg-[#2a2a2a] text-gray-800 dark:text-[#f0f0f0] border-gray-200 dark:border-[#3a3a3a]`
+
+const inputCls =
+  'w-full px-3 py-[9px] border rounded ' +
+  'bg-white dark:bg-[#2a2a2a] text-gray-800 dark:text-[#f0f0f0] text-sm ' +
+  'outline-none transition-[border-color,box-shadow] duration-150 ' +
+  'border-gray-200 dark:border-[#3a3a3a] ' +
+  'focus:border-blue-600 focus:shadow-focus-ring ' +
+  'disabled:opacity-55 disabled:cursor-not-allowed disabled:bg-gray-100 dark:disabled:bg-[#1e1e1e]'
+
 export default function AliasForm({ initial, onSave, onCancel }: AliasFormProps) {
   const isEdit = !!initial
 
@@ -80,91 +96,96 @@ export default function AliasForm({ initial, onSave, onCancel }: AliasFormProps)
   }
 
   return (
-    <div className="screen">
-      <header className="topbar">
-        <div className="topbar-left">
-          <h1 className="app-title">{isEdit ? 'Edit Alias' : 'Add New Alias'}</h1>
+    <div className="flex flex-col h-screen overflow-hidden">
+      <header className="flex items-center justify-between px-5 py-3 bg-white dark:bg-[#2a2a2a] border-b border-gray-200 dark:border-[#3a3a3a] shadow-sm shrink-0 app-region-drag">
+        <div className="flex items-center gap-3 app-region-no-drag">
+          <h1 className="text-base font-semibold">{isEdit ? 'Edit Alias' : 'Add New Alias'}</h1>
         </div>
-        <div className="topbar-right">
-          <button className="btn btn-secondary" onClick={onCancel}>
+        <div className="flex items-center gap-[10px] app-region-no-drag">
+          <button className={btnSecondary} onClick={onCancel}>
             Cancel
           </button>
         </div>
       </header>
 
-      <main className="content content-form">
-        <form className="alias-form" onSubmit={handleSubmit} noValidate>
-          <div className="form-field">
-            <label htmlFor="alias-name">
-              Name <span className="required">*</span>
-            </label>
-            <input
-              id="alias-name"
-              type="text"
-              value={name}
-              onChange={handleNameChange}
-              placeholder="e.g. gs"
-              disabled={isEdit}
-              className={errors.name ? 'input-error' : ''}
-              autoFocus={!isEdit}
-              autoComplete="off"
-              spellCheck={false}
-            />
-            {errors.name && <span className="field-error">{errors.name}</span>}
-            {isEdit && (
-              <span className="field-hint">
-                Alias name cannot be changed. Delete and re-add to rename.
-              </span>
-            )}
-          </div>
+      <main className="flex-1 overflow-y-auto p-5">
+        <div className="max-w-[520px] mx-auto pt-6">
+          <form className="flex flex-col gap-[22px]" onSubmit={handleSubmit} noValidate>
 
-          <div className="form-field">
-            <label htmlFor="alias-command">
-              Command <span className="required">*</span>
-            </label>
-            <input
-              id="alias-command"
-              type="text"
-              value={command}
-              onChange={handleCommandChange}
-              placeholder="e.g. git status"
-              className={errors.command ? 'input-error' : ''}
-              autoFocus={isEdit}
-              autoComplete="off"
-              spellCheck={false}
-            />
-            {errors.command && <span className="field-error">{errors.command}</span>}
-          </div>
-
-          <div className="form-field">
-            <label htmlFor="alias-description">
-              Description <span className="optional">(optional)</span>
-            </label>
-            <input
-              id="alias-description"
-              type="text"
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder="e.g. Short for git status"
-              autoComplete="off"
-            />
-          </div>
-
-          {saveError && (
-            <div className="save-error">
-              Save failed: {saveError}
+            <div className="flex flex-col gap-[7px]">
+              <label htmlFor="alias-name" className="text-[13px] font-medium">
+                Name <span className="text-red-600 ml-0.5">*</span>
+              </label>
+              <input
+                id="alias-name"
+                type="text"
+                value={name}
+                onChange={handleNameChange}
+                placeholder="e.g. gs"
+                disabled={isEdit}
+                className={`${inputCls}${errors.name ? ' border-red-600' : ''}`}
+                autoFocus={!isEdit}
+                autoComplete="off"
+                spellCheck={false}
+              />
+              {errors.name && <span className="text-red-600 text-xs">{errors.name}</span>}
+              {isEdit && (
+                <span className="text-gray-500 text-xs">
+                  Alias name cannot be changed. Delete and re-add to rename.
+                </span>
+              )}
             </div>
-          )}
 
-          <div className="form-actions">
-            <button type="submit" className="btn btn-primary" disabled={saving}>
-              {saving ? 'Saving…' : (isEdit ? 'Save Changes' : 'Add Alias')}
-            </button>
-            <button type="button" className="btn btn-secondary" onClick={onCancel}>
-              Cancel
-            </button>
-          </div>
-        </form>
+            <div className="flex flex-col gap-[7px]">
+              <label htmlFor="alias-command" className="text-[13px] font-medium">
+                Command <span className="text-red-600 ml-0.5">*</span>
+              </label>
+              <input
+                id="alias-command"
+                type="text"
+                value={command}
+                onChange={handleCommandChange}
+                placeholder="e.g. git status"
+                className={`${inputCls}${errors.command ? ' border-red-600' : ''}`}
+                autoFocus={isEdit}
+                autoComplete="off"
+                spellCheck={false}
+              />
+              {errors.command && <span className="text-red-600 text-xs">{errors.command}</span>}
+            </div>
+
+            <div className="flex flex-col gap-[7px]">
+              <label htmlFor="alias-description" className="text-[13px] font-medium">
+                Description <span className="text-gray-500 text-xs font-normal ml-1">(optional)</span>
+              </label>
+              <input
+                id="alias-description"
+                type="text"
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+                placeholder="e.g. Short for git status"
+                className={inputCls}
+                autoComplete="off"
+              />
+            </div>
+
+            {saveError && (
+              <div className="text-red-600 text-[13px] px-3.5 py-2.5 bg-red-600/[.08] border border-red-600/20 rounded">
+                Save failed: {saveError}
+              </div>
+            )}
+
+            <div className="flex gap-2.5 pt-1">
+              <button type="submit" className={btnPrimary} disabled={saving}>
+                {saving ? 'Saving…' : (isEdit ? 'Save Changes' : 'Add Alias')}
+              </button>
+              <button type="button" className={btnSecondary} onClick={onCancel}>
+                Cancel
+              </button>
+            </div>
+
+          </form>
+        </div>
       </main>
     </div>
   )
